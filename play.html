@@ -5,6 +5,16 @@
 	<title>test</title>
 	<style>
 
+	h1{
+		text-align: center;;
+	}
+
+	.btnBox{
+		width: 200px;
+		text-align: center;
+		margin: 0 auto;
+	}
+	
 	#box{
 		width: 50px;
 		height: 50px;
@@ -16,15 +26,15 @@
 
 	#big{
 		width: 1000px;
-		height: 600px;
+		height: 500px;
 		border:1px solid #ccc;
 		position: relative;
 		margin:0 auto;
 	}
 
 	#food{
-		width: 50px;
-		height: 50px;
+		width: 20px;
+		height: 20px;
 		background:red;
 		position :absolute;
 		top:0px;
@@ -34,11 +44,15 @@
 	</style>
 </head>
 <body onkeydown="return onKey(event)">
+	<h1>贪吃蛇</h1>
+	<div class="btnBox"><button onclick="start()">开始游戏</button></div>
+	<hr>
 	<div id="big">
 		<div id="box"></div>
 	</div>
 	<script>
 
+	var statu = 0;
 	var box = document.getElementById('box');
 	var big = document.getElementById('big');
 	var topNum = 0;
@@ -48,21 +62,25 @@
 	console.log(big.innerHTML + '<div id="food"></div>');
 	big.innerHTML += '<div id="food"></div>';
 	
-	var box = document.getElementById('box');
-	var width = document.getElementById('big').clientWidth;
-	var height = document.getElementById('big').clientHeight;
-	var bWidth = document.getElementById('box').clientWidth;
-	var bHeight = document.getElementById('box').clientHeight;
+	box = document.getElementById('box');
+	var width = big.clientWidth;
+	var height = big.clientHeight;
+	var bWidth = box.clientWidth;
+	var bHeight = box.clientHeight;
 
-	console.log(width);
-	console.log(height);
+	// console.log(width);
+	// console.log(height);
 
-	var inter =  setInterval(run,50);
+	var food = new Food;
+	console.log(food);
+	food.init();
+
+	// var inter =  setInterval(run,50);
 
 	function run(){
 
 		if((bWidth + leftNum) >= width || (bHeight + topNum) >= height || (leftNum == 0 && fanx == 1) || (topNum == 0 && fanx == 3)){
-			alert('die');
+			// alert('die');
 			clearInterval(inter);	
 		}
 
@@ -86,9 +104,20 @@
 		box.style.left = leftNum + 'px';
 		box.style.top = topNum + 'px';
 
+		// if(Math.abs(leftNum - food.fLeft) < (bWidth + food.width) && Math.abs(topNum - food.fTop) < (bHeight + food.height)){
+		// if(leftNum)
+		if(Math.abs(leftNum - food.fLeft) < (bWidth) && Math.abs(topNum - food.fTop) < (bHeight)){
+			food.init();
+		}
+
 	}
 
 	function onKey(e){
+
+		if(statu == 0) {
+			return;
+		}
+
 		var keynum;
 		
 		// alert(1);
@@ -127,6 +156,29 @@
 				fanx = 2;
 				break;
 		}
+	}
+
+	function Food (){
+
+		this.food = document.getElementById('food');
+		this.width = this.food.clientWidth;
+		this.height = this.food.clientHeight
+		this.fTop = Math.floor(Math.random() * height - this.food.clientHeight);
+		this.fLeft = Math.floor(Math.random() * width - this.food.clientWidth);
+
+		this.init = function (){
+			this.fTop = Math.floor(Math.random() * (height - this.food.clientHeight));
+			this.fLeft = Math.floor(Math.random() * (width - this.food.clientWidth));
+			console.log(this.food);
+			this.food.style.top = this.fTop + 'px';
+			this.food.style.left = this.fLeft + 'px';
+		}
+
+	}
+
+	function start(){
+		inter =  setInterval(run,50);
+		statu = 1;
 	}
 
 	</script>
