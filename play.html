@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>test</title>
+	<style>
+
+	#box{
+		width: 50px;
+		height: 50px;
+		background:#abcdef;
+		position :absolute;
+		top:0px;
+		left:0px;
+	}
+
+	#big{
+		width: 1000px;
+		height: 600px;
+		border:1px solid #ccc;
+		position: relative;
+		margin:0 auto;
+	}
+
+	#food{
+		width: 50px;
+		height: 50px;
+		background:red;
+		position :absolute;
+		top:0px;
+		right:0px;
+	}	
+
+	</style>
+</head>
+<body onkeydown="return onKey(event)">
+	<div id="big">
+		<div id="box"></div>
+	</div>
+	<script>
+
+	var box = document.getElementById('box');
+	var big = document.getElementById('big');
+	var topNum = 0;
+	var leftNum = 0;
+	var fanx = 0;
+
+	console.log(big.innerHTML + '<div id="food"></div>');
+	big.innerHTML += '<div id="food"></div>';
+	
+	var box = document.getElementById('box');
+	var width = document.getElementById('big').clientWidth;
+	var height = document.getElementById('big').clientHeight;
+	var bWidth = document.getElementById('box').clientWidth;
+	var bHeight = document.getElementById('box').clientHeight;
+
+	console.log(width);
+	console.log(height);
+
+	var inter =  setInterval(run,50);
+
+	function run(){
+
+		if((bWidth + leftNum) >= width || (bHeight + topNum) >= height || (leftNum == 0 && fanx == 1) || (topNum == 0 && fanx == 3)){
+			alert('die');
+			clearInterval(inter);	
+		}
+
+		switch(fanx){
+			case 0:
+				leftNum += 5;
+				break;
+			case 1:
+				leftNum -= 5;
+				break;
+			case 2:
+				topNum += 5;
+				break;
+			case 3:
+				topNum -= 5;
+				break;
+		}
+
+		// console.log(leftNum);
+		// console.log(topNum);
+		box.style.left = leftNum + 'px';
+		box.style.top = topNum + 'px';
+
+	}
+
+	function onKey(e){
+		var keynum;
+		
+		// alert(1);
+		if(window.event){
+			keynum = e.keyCode;
+		}else if(e.which){
+			keynum = e.which;
+		}
+
+		// console.log(keynum);
+
+		var box = document.getElementById('box');
+		switch(keynum){
+			case 37:
+				// leftNum -= 5;
+				// box.style.left = leftNum + 'px';
+				fanx = 1;
+				break;
+
+			case 38:
+				// topNum -= 5;
+				// // console.log(topNum);
+				// box.style.top = topNum + 'px';
+				fanx = 3
+				break;
+
+			case 39:
+				// leftNum += 5;
+				// box.style.left = leftNum + 'px';
+				fanx = 0;
+				break;
+
+			case 40:
+				// topNum += 5;
+				// box.style.top = topNum + 'px';
+				fanx = 2;
+				break;
+		}
+	}
+
+	</script>
+</body>
+</html>
