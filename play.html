@@ -33,8 +33,8 @@
 	}
 
 	#food{
-		width: 20px;
-		height: 20px;
+		width: 50px;
+		height: 50px;
 		background:red;
 		position :absolute;
 		top:0px;
@@ -45,43 +45,45 @@
 </head>
 <body onkeydown="return onKey(event)">
 	<h1>贪吃蛇</h1>
-	<div class="btnBox"><button onclick="start()">开始游戏</button></div>
+	<div class="btnBox"><button id="btn" onclick="start()">开始游戏</button></div>
 	<hr>
 	<div id="big">
 		<div id="box"></div>
+		<div id="food"></div>
+		<!-- <div id="body0"></div> -->
 	</div>
 	<script>
 
 	var statu = 0;
 	var box = document.getElementById('box');
 	var big = document.getElementById('big');
+	var btn = document.getElementById('btn');
 	var topNum = 0;
 	var leftNum = 0;
 	var fanx = 0;
+	var bodys = [];
+	var bodysDiv = [];
 
-	console.log(big.innerHTML + '<div id="food"></div>');
-	big.innerHTML += '<div id="food"></div>';
-	
+	// console.log(big.innerHTML + '<div id="food"></div>');
+	// big.innerHTML += '<div id="food"></div>';
+	// big.innerHTML += '<div id="body'+ bodys.length +'"></div>';
 	box = document.getElementById('box');
+	
 	var width = big.clientWidth;
 	var height = big.clientHeight;
 	var bWidth = box.clientWidth;
 	var bHeight = box.clientHeight;
 
-	// console.log(width);
-	// console.log(height);
-
+	var foodDiv = document.getElementById('food');
 	var food = new Food;
-	console.log(food);
-	food.init();
 
-	// var inter =  setInterval(run,50);
+	init();
 
 	function run(){
 
 		if((bWidth + leftNum) >= width || (bHeight + topNum) >= height || (leftNum == 0 && fanx == 1) || (topNum == 0 && fanx == 3)){
-			// alert('die');
-			clearInterval(inter);	
+			alert('die');
+			stop()	;
 		}
 
 		switch(fanx){
@@ -99,15 +101,41 @@
 				break;
 		}
 
-		// console.log(leftNum);
-		// console.log(topNum);
 		box.style.left = leftNum + 'px';
 		box.style.top = topNum + 'px';
+
+		for(var i = 0;i < bodys.length;i++){
+			if(i == 0){
+				bodys[0].bTop = topNum;
+				bodys[0].bLeft = leftNum;
+			}else{
+				bodys[i].bTop = bodys[i - 1].bTop;
+				bodys[i].bLeft = bodys[i - 1].bLeft;
+			}
+		}
+		if(bodys[0] != undefined){
+			console.log(bodys[0].bTop);
+			
+			console.log(bodys[0].bLeft);
+		}
 
 		// if(Math.abs(leftNum - food.fLeft) < (bWidth + food.width) && Math.abs(topNum - food.fTop) < (bHeight + food.height)){
 		// if(leftNum)
 		if(Math.abs(leftNum - food.fLeft) < (bWidth) && Math.abs(topNum - food.fTop) < (bHeight)){
 			food.init();
+			big.innerHTML += '<div id="body'+ bodys.length +'"></div>';
+			// console.dir(box);
+			// console.dir(document.getElementById('box'));
+			reDiv();
+			bodys.push(new Body());
+			console.dir(bodys);
+			if(bodys.length == 1){
+				bodys[0].bTop = topNum;
+				bodys[0].bLeft = leftNum;
+			}else{
+				bodys[bodys.length - 1].bTop = bodys[bodys.length - 2].bTop;
+				bodys[bodys.length - 1].bLeft = bodys[bodys.length - 2].bLeft;
+			}
 		}
 
 	}
@@ -120,14 +148,11 @@
 
 		var keynum;
 		
-		// alert(1);
 		if(window.event){
 			keynum = e.keyCode;
 		}else if(e.which){
 			keynum = e.which;
 		}
-
-		// console.log(keynum);
 
 		var box = document.getElementById('box');
 		switch(keynum){
@@ -160,25 +185,74 @@
 
 	function Food (){
 
-		this.food = document.getElementById('food');
-		this.width = this.food.clientWidth;
-		this.height = this.food.clientHeight
-		this.fTop = Math.floor(Math.random() * height - this.food.clientHeight);
-		this.fLeft = Math.floor(Math.random() * width - this.food.clientWidth);
+		// this.food = document.getElementById('food');
+		this.width = foodDiv.clientWidth;
+		this.height = foodDiv.clientHeight
+		this.fTop = Math.floor(Math.random() * height - foodDiv.clientHeight);
+		this.fLeft = Math.floor(Math.random() * width - foodDiv.clientWidth);
 
 		this.init = function (){
-			this.fTop = Math.floor(Math.random() * (height - this.food.clientHeight));
-			this.fLeft = Math.floor(Math.random() * (width - this.food.clientWidth));
-			console.log(this.food);
-			this.food.style.top = this.fTop + 'px';
-			this.food.style.left = this.fLeft + 'px';
+			this.fTop = Math.floor(Math.random() * (height - foodDiv.clientHeight));
+			this.fLeft = Math.floor(Math.random() * (width - foodDiv.clientWidth));
+			// console.log(this.food);
+			foodDiv.style.top = this.fTop + 'px';
+			foodDiv.style.left = this.fLeft + 'px';
 		}
 
 	}
 
 	function start(){
+		init();
 		inter =  setInterval(run,50);
 		statu = 1;
+		btn.onclick = stop;
+		btn.innerHTML = '停止'
+	}
+
+	function stop(){
+		clearInterval(inter);
+		statu = 0;
+		btn.onclick = start;
+		btn.innerHTML = '开始游戏';
+	}
+
+	function init(){
+		topNum = 0;
+		leftNum = 0;
+		fanx = 0;
+		statu = 0;
+		bodys = [];
+		box.style.left = leftNum + 'px';
+		box.style.top = topNum + 'px';
+		food.init();
+	}
+
+	function Head(){
+
+		this.hTop = 0;
+		this.hLeft = 0;
+
+		this.init = function (){
+			this.hTop = 0;
+			this.hLeft = 0;
+		}
+
+	}
+
+	function Body(){
+
+		this.bTop = 0;
+		this.bLeft = 0;
+
+	}
+
+	function reDiv(){
+		box = document.getElementById('box');
+		foodDiv = document.getElementById('food');
+
+		for(var i = 0;i < bodys.length;i++){
+			bodysDiv[i] = document.getElementById('body' + i);
+		}
 	}
 
 	</script>
