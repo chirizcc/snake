@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>test</title>
+	<title>play</title>
 	<style>
 
 	h1{
@@ -16,10 +16,13 @@
 	}
 	
 	#box{
-		width: 50px;
-		height: 50px;
+		width: 40px;
+		height: 40px;
 		background:#abcdef;
 		position :absolute;
+		border:1px solid #abcdef;
+		/*border-radius: 0px 20px 20px 0px; */
+		/*border-radius: 0px;*/
 		top:0px;
 		left:0px;
 	}
@@ -33,8 +36,8 @@
 	}
 
 	#food{
-		width: 50px;
-		height: 50px;
+		width: 40px;
+		height: 40px;
 		background:red;
 		position :absolute;
 		top:0px;
@@ -62,13 +65,22 @@
 	var leftNum = 0;
 	var fanx = 0;
 	var bodys = [];
-	var bodysDiv = [];
+	// var bodysDiv = [];
 
 	// console.log(big.innerHTML + '<div id="food"></div>');
 	// big.innerHTML += '<div id="food"></div>';
 	// big.innerHTML += '<div id="body'+ bodys.length +'"></div>';
+
+	// var body = document.createElement('div');
+	// body.id = 'body';
+	// big.appendChild(body);
+
 	box = document.getElementById('box');
-	
+	console.dir(box.style);
+	// box.style.borderRadius = '20px';
+	// box.style[1] = '20';
+	// box.style[2] = '20';
+
 	var width = big.clientWidth;
 	var height = big.clientHeight;
 	var bWidth = box.clientWidth;
@@ -86,25 +98,7 @@
 			stop()	;
 		}
 
-		switch(fanx){
-			case 0:
-				leftNum += 5;
-				break;
-			case 1:
-				leftNum -= 5;
-				break;
-			case 2:
-				topNum += 5;
-				break;
-			case 3:
-				topNum -= 5;
-				break;
-		}
-
-		box.style.left = leftNum + 'px';
-		box.style.top = topNum + 'px';
-
-		for(var i = 0;i < bodys.length;i++){
+		for(var i = bodys.length - 1;i >= 0;i--){
 			if(i == 0){
 				bodys[0].bTop = topNum;
 				bodys[0].bLeft = leftNum;
@@ -112,23 +106,52 @@
 				bodys[i].bTop = bodys[i - 1].bTop;
 				bodys[i].bLeft = bodys[i - 1].bLeft;
 			}
+
+			bodys[i].body.style.top = bodys[i].bTop + 'px';
+			bodys[i].body.style.left = bodys[i].bLeft + 'px';
 		}
-		if(bodys[0] != undefined){
+
+		switch(fanx){
+			case 0:
+				leftNum += 10;
+				break;
+			case 1:
+				leftNum -= 10;
+				break;
+			case 2:
+				topNum += 10;
+				break;
+			case 3:
+				topNum -= 10;
+				break;
+		}
+
+		box.style.left = leftNum + 'px';
+		box.style.top = topNum + 'px';
+
+		
+
+		/*if(bodys[0] != undefined){
 			console.log(bodys[0].bTop);
 			
 			console.log(bodys[0].bLeft);
-		}
+		}*/
 
 		// if(Math.abs(leftNum - food.fLeft) < (bWidth + food.width) && Math.abs(topNum - food.fTop) < (bHeight + food.height)){
 		// if(leftNum)
 		if(Math.abs(leftNum - food.fLeft) < (bWidth) && Math.abs(topNum - food.fTop) < (bHeight)){
 			food.init();
-			big.innerHTML += '<div id="body'+ bodys.length +'"></div>';
+			// big.innerHTML += '<div id="body'+ bodys.length +'"></div>';
 			// console.dir(box);
 			// console.dir(document.getElementById('box'));
-			reDiv();
-			bodys.push(new Body());
-			console.dir(bodys);
+
+			var newNody = document.createElement('div');
+			newNody.id = 'body' + bodys.length;
+			big.appendChild(newNody);
+
+			// reDiv();
+			bodys.push(new Body(bodys.length));
+			// console.dir(bodys);
 			if(bodys.length == 1){
 				bodys[0].bTop = topNum;
 				bodys[0].bLeft = leftNum;
@@ -136,6 +159,14 @@
 				bodys[bodys.length - 1].bTop = bodys[bodys.length - 2].bTop;
 				bodys[bodys.length - 1].bLeft = bodys[bodys.length - 2].bLeft;
 			}
+
+			for(var i = 0;i < bodys.length;i++){
+				bodys[i].body.style.top = bodys[i].bTop + 'px';
+				bodys[i].body.style.left = bodys[i].bLeft + 'px';
+			}
+			// console.log(bodys[0].bTop);
+			// console.log(bodys[0].bLeft);
+
 		}
 
 	}
@@ -156,29 +187,41 @@
 
 		var box = document.getElementById('box');
 		switch(keynum){
+			// 向右
 			case 37:
 				// leftNum -= 5;
 				// box.style.left = leftNum + 'px';
-				fanx = 1;
+				if(fanx != 0){
+					fanx = 1;	
+				}
 				break;
 
+			// 向上
 			case 38:
 				// topNum -= 5;
 				// // console.log(topNum);
 				// box.style.top = topNum + 'px';
-				fanx = 3
+				if(fanx != 2){
+					fanx = 3	
+				}
 				break;
 
+			// 向右
 			case 39:
 				// leftNum += 5;
 				// box.style.left = leftNum + 'px';
-				fanx = 0;
+				if(fanx != 1){
+					fanx = 0;
+				}
 				break;
 
+			// 向下
 			case 40:
 				// topNum += 5;
 				// box.style.top = topNum + 'px';
-				fanx = 2;
+				if(fanx != 3){
+					fanx = 2;
+				}
 				break;
 		}
 	}
@@ -217,6 +260,8 @@
 	}
 
 	function init(){
+		reDiv();
+
 		topNum = 0;
 		leftNum = 0;
 		fanx = 0;
@@ -227,32 +272,43 @@
 		food.init();
 	}
 
-	function Head(){
+	// function Head(){
 
-		this.hTop = 0;
-		this.hLeft = 0;
+	// 	this.hTop = 0;
+	// 	this.hLeft = 0;
 
-		this.init = function (){
-			this.hTop = 0;
-			this.hLeft = 0;
-		}
+	// 	this.init = function (){
+	// 		this.hTop = 0;
+	// 		this.hLeft = 0;
+	// 	}
 
-	}
+	// }
 
-	function Body(){
+	function Body(num){
 
+		this.body = document.getElementById('body' + num);
 		this.bTop = 0;
 		this.bLeft = 0;
+
+		// console.log(bWidth);
+		this.body.style.width = bWidth + 'px';
+		// this.body.style.width = 5 + 'px';
+		this.body.style.height = bHeight + 'px';
+		this.body.style.background = '#abcdef';
+		this.body.style.position = 'absolute';
+		this.body.style.border= '1px solid #abcdef';
 
 	}
 
 	function reDiv(){
+		big.innerHTML = '<div id="box"></div><div id="food"></div>';
+
 		box = document.getElementById('box');
 		foodDiv = document.getElementById('food');
 
-		for(var i = 0;i < bodys.length;i++){
-			bodysDiv[i] = document.getElementById('body' + i);
-		}
+		// for(var i = 0;i < bodys.length;i++){
+		// 	bodysDiv[i] = document.getElementById('body' + i);
+		// }
 	}
 
 	</script>
