@@ -23,6 +23,7 @@
 		border:1px solid #abcdef;
 		/*border-radius: 0px 20px 20px 0px; */
 		/*border-radius: 0px;*/
+		border-radius: 20px;
 		top:0px;
 		left:0px;
 	}
@@ -42,6 +43,13 @@
 		position :absolute;
 		top:0px;
 		right:0px;
+		border-radius: 20px;
+	}
+
+	#look{
+		width: 300px;
+		margin: 0 auto;
+		text-align: center;
 	}	
 
 	</style>
@@ -49,6 +57,7 @@
 <body onkeydown="return onKey(event)">
 	<h1>贪吃蛇</h1>
 	<div class="btnBox"><button id="btn" onclick="start()">开始游戏</button></div>
+	<div id="look">存活时间<span id="liveTime">00:00</span> 长度<span id="nowLong">1</span></div>
 	<hr>
 	<div id="big">
 		<div id="box"></div>
@@ -61,10 +70,13 @@
 	var box = document.getElementById('box');
 	var big = document.getElementById('big');
 	var btn = document.getElementById('btn');
-	var topNum = 0;
-	var leftNum = 0;
+	// var topNum = 0;
+	// var leftNum = 0;
 	var fanx = 0;
 	var bodys = [];
+
+	var sLong = 1;
+	var startTime = null;
 	// var bodysDiv = [];
 
 	// console.log(big.innerHTML + '<div id="food"></div>');
@@ -76,7 +88,7 @@
 	// big.appendChild(body);
 
 	box = document.getElementById('box');
-	console.dir(box.style);
+
 	// box.style.borderRadius = '20px';
 	// box.style[1] = '20';
 	// box.style[2] = '20';
@@ -86,6 +98,9 @@
 	var bWidth = box.clientWidth;
 	var bHeight = box.clientHeight;
 
+	var x = bWidth / 2;
+	var y = bHeight / 2;
+
 	var foodDiv = document.getElementById('food');
 	var food = new Food;
 
@@ -93,53 +108,84 @@
 
 	function run(){
 
-		if((bWidth + leftNum) >= width || (bHeight + topNum) >= height || (leftNum == 0 && fanx == 1) || (topNum == 0 && fanx == 3)){
+		// if((bWidth + leftNum) >= width || (bHeight + topNum) >= height || (leftNum == 0 && fanx == 1) || (topNum == 0 && fanx == 3)){
+		if((bWidth / 2 + x) >= width || (bHeight / 2 + y) >= height || (x == bWidth / 2 && fanx == 1) || (y == bHeight / 2 && fanx == 3)){
 			alert('die');
-			stop()	;
+			stop();
+		}
+
+		for(var i = 0;i < bodys.length;i++){
+			if(i == 0 || i == 1 || i == 2){
+				continue;
+			}
+			if(Math.sqrt(Math.abs(x - bodys[i].x) * Math.abs(x - bodys[i].x) + Math.abs(y - bodys[i].y) * Math.abs(y - bodys[i].y)) < (bWidth)){
+				alert('die');
+				stop();
+				break;
+			}
 		}
 
 		for(var i = bodys.length - 1;i >= 0;i--){
 			if(i == 0){
-				bodys[0].bTop = topNum;
-				bodys[0].bLeft = leftNum;
+				// bodys[0].bTop = topNum;
+				// bodys[0].bLeft = leftNum;
+				bodys[0].x = x;
+				bodys[0].y = y;
+				/*if(fanx == 0){
+					bodys[0].x = x - bWidth + 10;
+					bodys[0].y = y;
+				}else if(fanx == 1){
+					bodys[0].x = x + bWidth - 10;
+					bodys[0].y = y;
+				}else if(fanx == 3){
+					bodys[0].x = x;
+					bodys[0].y = y + bHeight - 10;
+				}else{
+					bodys[0].x = x;
+					bodys[0].y = y - bHeight + 10;
+				}*/
 			}else{
-				bodys[i].bTop = bodys[i - 1].bTop;
-				bodys[i].bLeft = bodys[i - 1].bLeft;
+				// bodys[i].bTop = bodys[i - 1].bTop;
+				// bodys[i].bLeft = bodys[i - 1].bLeft;
+				bodys[i].x = bodys[i - 1].x;
+				bodys[i].y = bodys[i - 1].y;
 			}
 
-			bodys[i].body.style.top = bodys[i].bTop + 'px';
-			bodys[i].body.style.left = bodys[i].bLeft + 'px';
+			// bodys[i].body.style.top = bodys[i].bTop + 'px';
+			// bodys[i].body.style.left = bodys[i].bLeft + 'px';
+			bodys[i].body.style.top = (bodys[i].y - bHeight / 2) + 'px';
+			bodys[i].body.style.left = (bodys[i].x - bWidth / 2) + 'px';
 		}
 
 		switch(fanx){
 			case 0:
-				leftNum += 10;
+				// leftNum += 10;
+				x += 20;
 				break;
 			case 1:
-				leftNum -= 10;
+				// leftNum -= 10;
+				x -= 20;
 				break;
 			case 2:
-				topNum += 10;
+				// topNum += 10;
+				y += 20;
 				break;
 			case 3:
-				topNum -= 10;
+				// topNum -= 10;
+				y -= 20;
 				break;
 		}
 
-		box.style.left = leftNum + 'px';
-		box.style.top = topNum + 'px';
+		// box.style.left = leftNum + 'px';
+		// box.style.top = topNum + 'px';
+		box.style.left = (x - bWidth / 2) + 'px';
+		box.style.top = (y - bHeight / 2) + 'px';
 
-		
 
-		/*if(bodys[0] != undefined){
-			console.log(bodys[0].bTop);
-			
-			console.log(bodys[0].bLeft);
-		}*/
-
+		// 吃到了
 		// if(Math.abs(leftNum - food.fLeft) < (bWidth + food.width) && Math.abs(topNum - food.fTop) < (bHeight + food.height)){
-		// if(leftNum)
-		if(Math.abs(leftNum - food.fLeft) < (bWidth) && Math.abs(topNum - food.fTop) < (bHeight)){
+		// if(Math.abs(leftNum - food.fLeft) < (bWidth) && Math.abs(topNum - food.fTop) < (bHeight)){
+		if(Math.sqrt(Math.abs(x - food.x) * Math.abs(x - food.x) + Math.abs(y - food.y) * Math.abs(y - food.y)) < ((bWidth + food.width) / 2)){
 			food.init();
 			// big.innerHTML += '<div id="body'+ bodys.length +'"></div>';
 			// console.dir(box);
@@ -153,21 +199,59 @@
 			bodys.push(new Body(bodys.length));
 			// console.dir(bodys);
 			if(bodys.length == 1){
-				bodys[0].bTop = topNum;
-				bodys[0].bLeft = leftNum;
+				// bodys[0].bTop = topNum;
+				// bodys[0].bLeft = leftNum;
+				bodys[0].x = x;
+				bodys[0].y = y;
+				/*if(fanx == 0){
+					bodys[0].x = x - bWidth;
+					bodys[0].y = y;
+				}else if(fanx == 1){
+					bodys[0].x = x + bWidth;
+					bodys[0].y = y;
+				}else if(fanx == 3){
+					bodys[0].x = x;
+					bodys[0].y = y + bHeight;
+				}else{
+					bodys[0].x = x;
+					bodys[0].y = y - bHeight;
+				}*/
 			}else{
-				bodys[bodys.length - 1].bTop = bodys[bodys.length - 2].bTop;
-				bodys[bodys.length - 1].bLeft = bodys[bodys.length - 2].bLeft;
+				// bodys[bodys.length - 1].bTop = bodys[bodys.length - 2].bTop;
+				// bodys[bodys.length - 1].bLeft = bodys[bodys.length - 2].bLeft;
+				bodys[bodys.length - 1].x = bodys[bodys.length - 2].x;
+				bodys[bodys.length - 1].y = bodys[bodys.length - 2].y;
 			}
 
 			for(var i = 0;i < bodys.length;i++){
-				bodys[i].body.style.top = bodys[i].bTop + 'px';
-				bodys[i].body.style.left = bodys[i].bLeft + 'px';
+				// bodys[i].body.style.top = bodys[i].bTop + 'px';
+				// bodys[i].body.style.left = bodys[i].bLeft + 'px';
+				bodys[i].body.style.top = (bodys[i].y - bHeight / 2) + 'px';
+				bodys[i].body.style.left = (bodys[i].x - bWidth / 2) + 'px';
 			}
 			// console.log(bodys[0].bTop);
 			// console.log(bodys[0].bLeft);
 
+			// 显示蛇长度
+			sLong++;
+			nowLong.innerHTML = sLong;
 		}
+
+		// 显示存活时间
+		var nowTime = new Date();
+		var after = nowTime.getTime() - startTime.getTime();
+		
+		var m = Math.floor(after / 1000 / 60);
+		var s = Math.floor((after - (m * 60 * 1000)) / 1000);
+
+		if(m < 10){
+			m = '0' + m;
+		}
+
+		if(s < 10){
+			s = '0' + s;
+		}
+		liveTime.innerHTML = m + ':' + s;
 
 	}
 
@@ -187,7 +271,7 @@
 
 		var box = document.getElementById('box');
 		switch(keynum){
-			// 向右
+			// 向左
 			case 37:
 				// leftNum -= 5;
 				// box.style.left = leftNum + 'px';
@@ -231,22 +315,36 @@
 		// this.food = document.getElementById('food');
 		this.width = foodDiv.clientWidth;
 		this.height = foodDiv.clientHeight
-		this.fTop = Math.floor(Math.random() * height - foodDiv.clientHeight);
-		this.fLeft = Math.floor(Math.random() * width - foodDiv.clientWidth);
+		// this.fTop = Math.floor(Math.random() * height - foodDiv.clientHeight);
+		// this.fLeft = Math.floor(Math.random() * width - foodDiv.clientWidth);
+		// this.x = (this.fLeft + this.width / 2);
+		// this.y = (this.fTop + this.height / 2);
+		this.x = Math.floor(Math.random() * (width - foodDiv.clientWidth)) + (this.width / 2);
+		this.y = Math.floor(Math.random() * (height - foodDiv.clientHeight)) + (this.height / 2);
 
 		this.init = function (){
-			this.fTop = Math.floor(Math.random() * (height - foodDiv.clientHeight));
-			this.fLeft = Math.floor(Math.random() * (width - foodDiv.clientWidth));
-			// console.log(this.food);
-			foodDiv.style.top = this.fTop + 'px';
-			foodDiv.style.left = this.fLeft + 'px';
+			// this.fTop = Math.floor(Math.random() * (height - foodDiv.clientHeight));
+			// this.fLeft = Math.floor(Math.random() * (width - foodDiv.clientWidth));
+			// this.x = (this.fLeft + this.width / 2);
+			// this.y = (this.fTop + this.height / 2);
+			this.x = Math.floor(Math.random() * (width - foodDiv.clientWidth)) + (this.width / 2);
+			this.y = Math.floor(Math.random() * (height - foodDiv.clientHeight)) + (this.height / 2);
+			
+			// foodDiv.style.top = this.fTop + 'px';
+			// foodDiv.style.left = this.fLeft + 'px';
+			foodDiv.style.top = (this.y - this.height / 2) + 'px';
+			foodDiv.style.left = (this.x - this.width / 2) + 'px';
 		}
 
 	}
 
 	function start(){
 		init();
-		inter =  setInterval(run,50);
+
+		startTime = new Date();
+		// console.log(st)
+
+		inter =  setInterval(run,80);
 		statu = 1;
 		btn.onclick = stop;
 		btn.innerHTML = '停止'
@@ -261,43 +359,34 @@
 
 	function init(){
 		reDiv();
+		// topNum = 0;
+		// leftNum = 0;
+		sLong = 1;
+		x = bWidth / 2;
+		y = bHeight / 2;
 
-		topNum = 0;
-		leftNum = 0;
 		fanx = 0;
 		statu = 0;
 		bodys = [];
-		box.style.left = leftNum + 'px';
-		box.style.top = topNum + 'px';
+		box.style.left = (x - bWidth / 2) + 'px';
+		box.style.top = (y - bHeight / 2) + 'px';
 		food.init();
 	}
-
-	// function Head(){
-
-	// 	this.hTop = 0;
-	// 	this.hLeft = 0;
-
-	// 	this.init = function (){
-	// 		this.hTop = 0;
-	// 		this.hLeft = 0;
-	// 	}
-
-	// }
 
 	function Body(num){
 
 		this.body = document.getElementById('body' + num);
-		this.bTop = 0;
-		this.bLeft = 0;
+		// this.bTop = 0;
+		// this.bLeft = 0;
+		this.x = bWidth / 2;
+		this.y = bHeight / 2;
 
-		// console.log(bWidth);
 		this.body.style.width = bWidth + 'px';
-		// this.body.style.width = 5 + 'px';
 		this.body.style.height = bHeight + 'px';
 		this.body.style.background = '#abcdef';
 		this.body.style.position = 'absolute';
 		this.body.style.border= '1px solid #abcdef';
-
+		this.body.style.borderRadius = (bWidth / 2) + 'px';
 	}
 
 	function reDiv(){
@@ -305,10 +394,6 @@
 
 		box = document.getElementById('box');
 		foodDiv = document.getElementById('food');
-
-		// for(var i = 0;i < bodys.length;i++){
-		// 	bodysDiv[i] = document.getElementById('body' + i);
-		// }
 	}
 
 	</script>
